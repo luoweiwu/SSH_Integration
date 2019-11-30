@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+	
+	<struts>	
+		<!-- 开启动态方法调用 -->
+		<constant name="struts.devMode" value="true"></constant>
+		<constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
+		
+		<!-- 让spring管理Action的创建 -->
+		<constant name="struts.objectFactory" value="spring"></constant>
+		
+		
+		<package name="ssh" namespace="/" extends="struts-default">
+			<!-- 允许所有方法 -->
+			<global-allowed-methods>regex:.*</global-allowed-methods>
+			<!-- 配置Action -->
+			<action name="UserAction_*" class="com.Gary.web.UserAction">
+				<!-- 配置结果集第一个为转发，第二个为重定向 -->
+				<result name="login">/login.jsp</result>
+				<result name="toIndex" type="redirect">/index.html</result>
+			</action>
+		</package>
+	
+	</struts>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	
+	<bean name="dataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="jdbcUrl" value="jdbc:mysql:///spring"></property>
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="123456"></property>
+	</bean>
+	
+	<!-- 配置sesisonFactory -->
+	<bean name="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<!-- 配置dataSource -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 配置基本属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<!-- 方言 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+				<!-- 生成表策略 -->
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!-- 是否生成sql语句 -->
+				<prop key="hibernate.show_sql">true</prop>
+				<!-- 是否格式化sql -->
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+		<!-- 读取orm元数据 -->
+		<property name="mappingDirectoryLocations"
+			value="classpath:com/Gary/domain"></property>
+	</bean>
+	
+	<!-- 事务的核心管理器 -->
+	<bean name="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<!-- 需要sessionFactory -->
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<!-- 通知 -->
+	<tx:advice id="advice"
+		transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 织入 -->
+	<aop:config>
+		<!-- 切入点 -->
+		<aop:pointcut
+			expression="execution(* com.Gary.service.*.*(..))" id="pc" />
+		<!-- 配置切面 -->
+		<aop:advisor advice-ref="advice" pointcut-ref="pc" />
+	</aop:config>
+	
+	
+	<!-- 配置userAciton -->
+	<bean name="userAction" class="com.Gary.web.UserAction" scope="prototype">
+		<!-- 注入userService -->
+		<property name="userService" ref="userService"></property>
+	</bean>
+	
+	<!-- 配置userService -->
+	<bean name="userService" class="com.Gary.service.UserService">
+		<!-- 注入userDao -->
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	
+	<!-- 配置userDao -->
+	<bean name="userDao" class="com.Gary.dao.UserDao">
+		<!-- 注入sessionFactory (用到了HibernateDaoSupport) -->
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	
+</beans>

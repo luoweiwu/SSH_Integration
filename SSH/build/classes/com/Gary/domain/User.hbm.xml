@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+	<!-- 配置包名字 -->
+    <hibernate-mapping package="com.Gary.domain">
+   		<!-- 配置包类和数据库中的哪个表对应 -->
+    	<class name="User" table="user">
+    	<!-- 主键 -->
+    		<id name="id">
+    			<generator class="uuid"></generator>
+    		</id>
+    		
+    		<!-- 普通字段 -->
+    		<property name="username" column="username"></property>
+    		<property name="password" column="password"></property>
+    		
+    	</class>
+    
+    </hibernate-mapping>
